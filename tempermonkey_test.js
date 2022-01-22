@@ -1,3 +1,3 @@
-function bitrix_helper(){
+function testFunc(){
   alert('123');
 }

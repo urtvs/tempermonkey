@@ -1061,6 +1061,101 @@ const bitrix_helper = function ()
                 });
             });
         }, 500);
+
+        if(docType === 'lead') {
+            //Прячет кнопку "Сделку + контакт" на странице лида
+            let convertButtonStyle = 'button[id$="_convert_button"].ui-btn-extra {background-color: #ddd; border-color: #ddd}'
+            let convertLabelStyle = 'button[id$="_convert_label"].ui-btn-main {padding: 0; margin: 0; width: 0; font-size: 0; border-color: #ddd}'
+            let convertContainerStyle = 'div.ui-btn-split.ui-btn-primary {border-color: #ddd}'
+            appendStyle(convertButtonStyle + convertLabelStyle + convertContainerStyle)
+
+            // Убирает выбор у кнопки "Создать на основании сделку + контакт"
+            let buttonMenuStyle = '#entity_progress_success_btn_menu.webform-small-button-right-part {display: none}'
+            let buttonContainerStyle = '#entity_progress_success_btn_inner_wrapper.webform-small-button.webform-small-button-accept {padding-right: 18px}'
+            appendStyle(buttonMenuStyle + buttonContainerStyle)
+            
+            // Изменение текста кнопки "Создать на основании сделку + контакт"
+            watchDomMutation('#entity_progress_TERMINATION', document.body, (node) => {
+                document.querySelector('#entity_progress_success_btn_inner_wrapper > span:nth-child(1)').innerHTML = "Создать "
+                /* span = $('#entity_progress_success_btn_inner_wrapper:nth-child(1)')
+                span.text(span.text().replace("Создать на основании", "Создать")); */
+            })
+
+            /*
+            *   Отображение меню выбора линий
+            */
+            function showPhoneLines(data) {
+                DEBUG_MODE == 1 && console.log('phone lines ok')
+                DEBUG_MODE == 1 && console.log(data)
+
+                $(document).ready(function() {
+                    //Стили меню выбора линий
+                    appendStyle(".dropdown {position: relative; display: inline-block; padding: 0 8px; max-width: 36px}\
+.dropdown-content {display: none; position: relative; left: -16px; top: 38px; background-color: #f9f9f9; min-width: 140px; box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2); z-index: 1000;}\
+.dropdown:hover .dropdown-content {display: block;}\
+.call-line {display: block; height: 2rem; line-height: 2rem;} .call-line:hover {background-color: #eee} .call-line:before {right: 15px !important}")
+                    // Пытается создать меню, останавливается как только
+                    // оно создано, и добавляет ссылки callto:
+                    var id = setInterval(function() {
+                        var t = $(".ui-btn-icon-phone-call" )
+                        t.after('<div class="dropdown call-lines ui-btn ui-btn-light-border ui-btn-dropdown"><span></span><div class="dropdown-content"></div></div>');
+                
+                        if($('.call-lines').length) {
+                            clearInterval(id)
+                            var dropdown = $(".dropdown-content")
+                            var phone = getPhoneNumber()
+                            for (var i = 0; i < data.length; i++) {
+                                dropdown.append(`<a href="callto:${data[i].prefix}${phone}" class="call-line">${data[i].lineName}`)
+                            }
+                        }
+                        console.log(t)
+                    }, 500)
+                });
+            }
+
+            /*
+            *   Запрос к API для получения телефонных линий
+            */
+            function requestPhoneLines(url, callback)
+            {
+                var xhttp = new XMLHttpRequest();
+                xhttp.onreadystatechange = function ()
+                {
+                    if (this.readyState === 4 && this.status === 200)
+                    {
+                        try
+                        {
+                            var responseJSON = JSON.parse(this.responseText);
+                        }
+                        catch (error)
+                        {
+                            console.log(error);
+                            return;
+                        }
+                        callback(responseJSON.callLine);
+                    }
+                };
+                xhttp.open('GET', url, true);
+                xhttp.send();
+            }
+
+            /*
+            *   Функция вызова запроса
+            */
+            function getPhoneLines()
+            {
+                var url = API_URL + '&doc=' + docType + '&id=' + docId + '&phone=null';
+                requestPhoneLines(url,
+                    function(data)
+                    {
+                        showPhoneLines(data)
+                    }
+                );
+            }     
+            
+            getPhoneLines();
+        }
+
     }
 
 
@@ -1201,4 +1296,3 @@ const bitrix_helper = function ()
 
 
 };
-

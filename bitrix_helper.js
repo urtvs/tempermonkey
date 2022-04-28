@@ -1091,11 +1091,20 @@ const bitrix_helper = function ()
                 $(document).ready(function() {
                     //Стили меню выбора линий
                     appendStyle(".dropdown {position: relative; display: inline-block; padding: 0 8px; max-width: 36px}\
+#pagetitle-menu {z-index: 11}\
 .dropdown-content {display: none; position: relative; left: -16px; top: 38px; background-color: #f9f9f9; min-width: 140px; box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2); z-index: 1000;}\
 .dropdown:hover .dropdown-content {display: block;}\
 .call-line {display: block; height: 2rem; line-height: 2rem;} .call-line:hover {background-color: #eee} .call-line:before {right: 15px !important}")
+
+                    let number = getPhoneNumber().replace(/\D/g, '');
+                    
+                    //Создание ссылки для звонка из Битрикса
+                    const createCallLinkElement = (line) => {
+                        return `<a class="call-line" title="${line.lineName}" href="callto://${line.prefix}${number}"` + 
+                        `onclick="if(typeof(top.BXIM) !== \'undefined\') { top.BXIM.phoneTo(\'${line.prefix}${number}\', ` + 
+                        `{&quot;ENTITY_TYPE_NAME&quot;:&quot;LEAD&quot;,&quot;ENTITY_ID&quot;:${docId},&quot;AUTO_FOLD&quot;:true}); return BX.PreventDefault(event); }">${line.lineName}</a>`                   }
                     // Пытается создать меню, останавливается как только
-                    // оно создано, и добавляет ссылки callto:
+                    // оно создано, и добавляет ссылки callto://
                     var id = setInterval(function() {
                         var t = $(".ui-btn-icon-phone-call" )
                         t.after('<div class="dropdown call-lines ui-btn ui-btn-light-border ui-btn-dropdown"><span></span><div class="dropdown-content"></div></div>');
@@ -1105,7 +1114,7 @@ const bitrix_helper = function ()
                             var dropdown = $(".dropdown-content")
                             var phone = getPhoneNumber()
                             for (var i = 0; i < data.length; i++) {
-                                dropdown.append(`<a href="callto://${data[i].prefix}${phone}" class="call-line">${data[i].lineName}`)
+                                dropdown.append(createCallLinkElement(data[i]))
                             }
                         }
                         console.log(t)

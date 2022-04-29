@@ -1061,26 +1061,7 @@ const bitrix_helper = function ()
                 });
             });
         }, 500);
-
-        if(docType === 'lead') {
-            //Прячет кнопку "Сделку + контакт" на странице лида
-            let convertButtonStyle = 'button[id$="_convert_button"].ui-btn-extra {background-color: #ddd; border-color: #ddd}'
-            let convertLabelStyle = 'button[id$="_convert_label"].ui-btn-main {padding: 0; margin: 0; width: 0; font-size: 0; border-color: #ddd}'
-            let convertContainerStyle = 'div.ui-btn-split.ui-btn-primary {border-color: #ddd}'
-            appendStyle(convertButtonStyle + convertLabelStyle + convertContainerStyle)
-
-            // Убирает выбор у кнопки "Создать на основании сделку + контакт"
-            let buttonMenuStyle = '#entity_progress_success_btn_menu.webform-small-button-right-part {display: none}'
-            let buttonContainerStyle = '#entity_progress_success_btn_inner_wrapper.webform-small-button.webform-small-button-accept {padding-right: 18px}'
-            appendStyle(buttonMenuStyle + buttonContainerStyle)
-            
-            // Изменение текста кнопки "Создать на основании сделку + контакт"
-            watchDomMutation('#entity_progress_TERMINATION', document.body, (node) => {
-                document.querySelector('#entity_progress_success_btn_inner_wrapper > span:nth-child(1)').innerHTML = "Создать "
-                /* span = $('#entity_progress_success_btn_inner_wrapper:nth-child(1)')
-                span.text(span.text().replace("Создать на основании", "Создать")); */
-            })
-
+        if(['deal', 'lead'].includes(docType)) {
             /*
             *   Отображение меню выбора линий
             */
@@ -1091,15 +1072,13 @@ const bitrix_helper = function ()
                 $(document).ready(function() {
                     //Стили меню выбора линий
                     appendStyle(".dropdown {position: relative; display: inline-block; padding: 0 8px; max-width: 36px}\
-#pagetitle-menu {z-index: 11}\
-.dropdown-content {display: none; position: relative; left: -16px; top: 38px; background-color: #f9f9f9; min-width: 140px; box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2); z-index: 1000;}\
-.dropdown:hover .dropdown-content {display: block;}\
-.call-line {display: block; height: 2rem; line-height: 2rem;} .call-line:hover {background-color: #eee} .call-line:before {right: 15px !important}")
-
-                    let number = getPhoneNumber().replace(/\D/g, '');
+    #pagetitle-menu {z-index: 11}\
+    .dropdown-content {display: none; position: relative; left: -16px; top: 38px; background-color: #f9f9f9; min-width: 140px; box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2); z-index: 1000;}\
+    .dropdown:hover .dropdown-content {display: block;}\
+    .call-line {display: block; height: 2rem; line-height: 2rem;} .call-line:hover {background-color: #eee} .call-line:before {right: 15px !important}")
                     
                     //Создание ссылки для звонка из Битрикса
-                    const createCallLinkElement = (line) => {
+                    const createCallLinkElement = (line, number) => {
                         return `<a class="call-line" title="${line.lineName}" href="callto://${line.prefix}${number}"` + 
                         `onclick="if(typeof(top.BXIM) !== \'undefined\') { top.BXIM.phoneTo(\'${line.prefix}${number}\', ` + 
                         `{&quot;ENTITY_TYPE_NAME&quot;:&quot;LEAD&quot;,&quot;ENTITY_ID&quot;:${docId},&quot;AUTO_FOLD&quot;:true}); return BX.PreventDefault(event); }">${line.lineName}</a>`                   }
@@ -1112,9 +1091,9 @@ const bitrix_helper = function ()
                         if($('.call-lines').length) {
                             clearInterval(id)
                             var dropdown = $(".dropdown-content")
-                            var phone = getPhoneNumber()
+                            let number = document.querySelector('title').innerHTML.replace(/\D/g, '')
                             for (var i = 0; i < data.length; i++) {
-                                dropdown.append(createCallLinkElement(data[i]))
+                                dropdown.append(createCallLinkElement(data[i], number))
                             }
                         }
                         console.log(t)
@@ -1163,6 +1142,26 @@ const bitrix_helper = function ()
             }     
             
             getPhoneLines();
+        }
+        if(docType === 'lead') {
+            //Прячет кнопку "Сделку + контакт" на странице лида
+            let convertButtonStyle = 'button[id$="_convert_button"].ui-btn-extra {background-color: #ddd; border-color: #ddd}'
+            let convertLabelStyle = 'button[id$="_convert_label"].ui-btn-main {padding: 0; margin: 0; width: 0; font-size: 0; border-color: #ddd}'
+            let convertContainerStyle = 'div.ui-btn-split.ui-btn-primary {border-color: #ddd}'
+            appendStyle(convertButtonStyle + convertLabelStyle + convertContainerStyle)
+
+            // Убирает выбор у кнопки "Создать на основании сделку + контакт"
+            let buttonMenuStyle = '#entity_progress_success_btn_menu.webform-small-button-right-part {display: none}'
+            let buttonContainerStyle = '#entity_progress_success_btn_inner_wrapper.webform-small-button.webform-small-button-accept {padding-right: 18px}'
+            appendStyle(buttonMenuStyle + buttonContainerStyle)
+            
+            // Изменение текста кнопки "Создать на основании сделку + контакт"
+            watchDomMutation('#entity_progress_TERMINATION', document.body, (node) => {
+                document.querySelector('#entity_progress_success_btn_inner_wrapper > span:nth-child(1)').innerHTML = "Создать "
+                /* span = $('#entity_progress_success_btn_inner_wrapper:nth-child(1)')
+                span.text(span.text().replace("Создать на основании", "Создать")); */
+            })
+            
         }
 
     }

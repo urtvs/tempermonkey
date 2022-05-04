@@ -1,7 +1,7 @@
-// ==UserScript== Обновлено 14 февраля 2022 - Обзвон галерея(Добавлена функция showImage)
+// ==UserScript== Обновлено 04 мая 2022 - выбор линии и создания сделки на основе
 
 /* global $ */
-const version = '3';
+const version = '195';
 const CORE_DEBUG_MODE = false;
 
 const bitrix_helper = function ()

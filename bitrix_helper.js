@@ -1,7 +1,7 @@
 // ==UserScript== Обновлено 04 мая 2022 - выбор линии и создания сделки на основе
 
 /* global $ */
-const version = '195';
+const version = '196';
 const CORE_DEBUG_MODE = false;
 
 const bitrix_helper = function ()

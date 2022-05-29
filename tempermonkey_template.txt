@@ -4,7 +4,7 @@
 // @version      1.0
 // @description  Мое описание
 // @author       You
-// @match        https://unirenter.bitrix24.ru/*
+// @match        https://*.domain.ru
 // @grant        none
 // @require      https://code.jquery.com/jquery-3.4.1.min.js
 // @require      https://cdn.jsdelivr.net/npm/jquery.growl@1.3.5/javascripts/jquery.growl.min.js
@@ -16,7 +16,15 @@
 // Режим отладки. 0 - отключен; 1 - включен
 var DEBUG_MODE = 0;
 
-var userID = 1;
-var versionID=2;
+var hash='tokenAuth';
+
+var domain ='domain.ru';
+
+//Дополнительные параметры
+var queryArgs = {
+    ah: hash, 
+    devVariable: 'devValue',
+};
+
 
 testFunc();
